@@ -1,20 +1,23 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class Viewer extends JPanel {
+public class Viewer extends JPanel implements KeyListener {
     public static JFrame frame;
-    public static double[][] terrain;
+    public static Terrain terrain;
 
     public Viewer() {
         frame = new JFrame("TerraGen");
         frame.setSize(1025, 1025);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.add(this);
+        frame.addKeyListener(this);
         frame.setVisible(true);
     }
 
     public static void main(String args[]) {
-        terrain = DiamondSquare.generateTerrain(10, (int) (Math.random()*10000));
+        terrain = DiamondSquare.generateTerrain(10, (int) (Math.random() * 10000));
         new Viewer();
     }
 
@@ -31,16 +34,33 @@ public class Viewer extends JPanel {
     }
 
     private static Color getColor(int x, int y) {
-        double val = terrain[y][x] + DiamondSquare.RANGE;
-        //Represents the percentage of the maximum height
-        double percentage = val / (DiamondSquare.RANGE * 2);
+        double val = terrain.getHeight(y, x);
 
-        if (percentage <= 0.6)
+        if (val <= 0.6)
             return Color.blue;
-        if (percentage >= 0.85)
+        if (val <= 0.61)
+            return new Color(238, 232, 170);
+
+        if (val >= 0.95)
             return Color.white;
-        if (percentage >= 0.80)
+        if (val >= 0.90)
             return new Color(139, 125, 107);
-        return Color.green;
+        return new Color(50, 205, 50);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            terrain = DiamondSquare.generateTerrain(10, (int) (Math.random() * 10000));
+            repaint();
+        }
     }
 }
