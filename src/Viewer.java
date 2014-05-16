@@ -37,7 +37,7 @@ public class Viewer extends JPanel implements KeyListener {
         double val = terrain.getHeight(y, x);
 
         if (val <= 0.6)
-            return Color.blue;
+            return new Color(30,144,255);
         if (val <= 0.61)
             return new Color(238, 232, 170);
 
