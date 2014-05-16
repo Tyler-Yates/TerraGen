@@ -9,18 +9,22 @@ public class DiamondSquare {
     public static final double RANGE = 500;
 
     /**
-     * Returns a matrix of doubles representing the height values of the terrain.
+     * Returns a Terrain object with randomly generated height values.
      * <p/>
-     * Each value ranges from [-RANGE, RANGE]
      *
      * @param size The size of the output. The resulting output will have a side length of 2^(size)+1 pixels.
-     * @param seed The seed to use in the random number generator
-     * @return A matrix of doubles
+     * @param seed The seed to use in the random number generator.
+     * @return A Terrain object
      */
-    public static double[][] generateTerrain(int size, int seed) {
+    public static Terrain generateTerrain(int size, int seed) {
         //Use the seed to generate random numbers
         Random random = new Random(seed);
+
+        //Represents the current range of alteration values
         double range = RANGE;
+
+        //Create the Terrain object
+        Terrain terrain = new Terrain();
 
         //Calculate the size of the matrix from the input
         int rows = (int) (Math.pow(2, size) + 1);
@@ -33,6 +37,9 @@ public class DiamondSquare {
         data[0][data.length - 1] = random.nextDouble();
         data[data.length - 1][0] = random.nextDouble();
         data[data.length - 1][data.length - 1] = random.nextDouble();
+
+        double heighestHeight = Double.NEGATIVE_INFINITY;
+        double lowestHeight = Double.POSITIVE_INFINITY;
 
         //Fill the matrix
         for (int sideLength = rows - 1; sideLength >= 2; sideLength /= 2, range /= 2) {
@@ -50,6 +57,13 @@ public class DiamondSquare {
 
                     //Add random offset
                     data[x + halfSideLength][y + halfSideLength] = avg + (random.nextDouble() * 2 * range) - range;
+
+                    //Update the lowest and highest heights if necessary
+                    double height = data[x + halfSideLength][y + halfSideLength];
+                    if(height > heighestHeight)
+                        heighestHeight = height;
+                    if(height < lowestHeight)
+                        lowestHeight = height;
                 }
             }
 
@@ -69,6 +83,13 @@ public class DiamondSquare {
                     //Update value for center of diamond
                     data[x][y] = avg;
 
+                    //Update the lowest and highest heights if necessary
+                    double height = data[x][y];
+                    if(height > heighestHeight)
+                        heighestHeight = height;
+                    if(height < lowestHeight)
+                        lowestHeight = height;
+
                     //Wrap the edge values
                     if (x == 0) data[rows - 1][y] = avg;
                     if (y == 0) data[x][rows - 1] = avg;
@@ -76,6 +97,14 @@ public class DiamondSquare {
             }
         }
 
-        return data;
+        //Set the values for the terrain
+        terrain.setHeights(data);
+        terrain.setHighestHeight(heighestHeight);
+        terrain.setLowestHeight(lowestHeight);
+
+        //Proportionalize the values to make it easier to interpret the heights
+        terrain.proportionalizeValues();
+
+        return terrain;
     }
 }
