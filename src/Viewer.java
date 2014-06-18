@@ -1,15 +1,21 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class Viewer extends JPanel implements KeyListener {
     public static JFrame frame;
     public static Terrain terrain;
 
+    private static final int size = (int) (Math.pow(2, 10) + 1);
+
     public Viewer() {
         frame = new JFrame("TerraGen");
-        frame.setSize(1025, 1025);
+        frame.setSize(size, size);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.add(this);
         frame.addKeyListener(this);
@@ -61,6 +67,15 @@ public class Viewer extends JPanel implements KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             terrain = DiamondSquare.generateTerrain(10, (int) (Math.random() * 10000));
             repaint();
+        } else if(e.getKeyCode() == KeyEvent.VK_P) {
+            final BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+            paintComponent(image.createGraphics());
+
+            try {
+                ImageIO.write(image, "png", new File("sample.png"));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 }
